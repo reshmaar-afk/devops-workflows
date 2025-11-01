@@ -1,10 +1,16 @@
-name: CI (develop)
+name: Node CI Reusable
 
 on:
-  pull_request:
-    branches: [develop]
-  push:
-    branches: [develop]
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version
+        required: false
+        default: '20'
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
   ci:
@@ -16,11 +22,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          # Set your exact Node version here if needed
-          node-version: 20
+          node-version: ${{ inputs.node-version }}
           cache: npm
 
-      # Use npm ci if a lockfile exists; otherwise npm install
       - name: Install dependencies (lockfile)
         if: hashFiles('package-lock.json') != ''
         run: npm ci
